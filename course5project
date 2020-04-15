@@ -1,0 +1,126 @@
+'''
+CODE FOR BIG FILE ----> readonly/images.zip <---- CODE FOR BIG FILE ----> readonly/images.zip <---- CODE FOR BIG FILE
+'''
+import zipfile
+import PIL
+from PIL import Image
+import pytesseract
+import cv2
+import numpy as np
+
+# loading the face detection classifier
+face_cascade = cv2.CascadeClassifier('readonly/haarcascade_frontalface_default.xml')
+
+
+# the rest is up to you!
+
+def getDict(zippedFile):
+    '''
+    This function gets a .zip file containing images and returns a dictionary whose keys are the image names
+    and the values are a list, first those images text content read by pytesseract, and second is a zipfile.ZipInfo
+    image object.
+    '''
+    j = 0
+    i = 0
+    dic = {}
+    contents = []
+    imageObject = []
+    with zipfile.ZipFile(zippedFile) as file:
+        for single_info in file.infolist():
+            imageObject.append(single_info)
+            with file.open(single_info) as imageInfo:
+                img = Image.open(imageInfo)
+                text = pytesseract.image_to_string(img)
+                contents.append(text)
+    for name in file.namelist():
+        dic[name] = [contents[j], imageObject[j]]
+        j += 1
+
+    return dic
+
+
+def detectFaces(imageName, dic):
+    '''
+    Detect faces in an image and return the faces bounding boxes as a list of lists [[x, y, width, height]].
+    '''
+    with zipfile.ZipFile('readonly/images.zip') as file:
+        infoForImage = dic[imageName][1]
+        file.extract(infoForImage)
+        cv_img = cv2.imread(infoForImage.filename)
+        gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+        faceBoxes = face_cascade.detectMultiScale(gray, 1.35)
+
+    return faceBoxes
+
+
+def cropImage(image, boundingBox, dic):
+    '''
+    Crops an image and returns a list of images cropped after Image.thumbnail() function's been applied.
+    '''
+
+    MAX_SIZE = (100, 100)
+    croppedImages = []
+
+    with zipfile.ZipFile('readonly/images.zip') as file:
+        info = dic[image][1]
+        data = file.open(info)
+        img = Image.open(data)
+
+    for x, y, w, h in boundingBox:
+        final_img = img.crop((x, y, x + w, y + h))
+        final_img.thumbnail(MAX_SIZE)
+        croppedImages.append(final_img)
+
+    return croppedImages
+
+
+def createContactSheet(images):
+    '''
+    Creates a contact sheet with the width five times the first image's width and 2 times its height's
+    '''
+    if len(images) > 5:
+        contact_sheet = PIL.Image.new(images[0].mode, (images[0].width * 5, images[0].height * 2))
+    else:
+        contact_sheet = PIL.Image.new(images[0].mode, (images[0].width * 5, images[0].height))
+    x = 0
+    y = 0
+    for image in images:
+        contact_sheet.paste(image, (x, y))
+
+        if x + images[0].width == contact_sheet.width:
+            x = 0
+            y += images[0].height
+        else:
+            x += images[0].width
+
+    return contact_sheet
+
+
+def checkWord(word, dic):
+    '''
+    Does the magical part!!!
+    '''
+    boundingBoxes = []
+
+    for key in dic:
+        if word in dic[key][0].strip():
+            print('Results found in {}'.format(key))
+            try:
+                boundingBoxes = detectFaces(key, dic).tolist()
+            except:
+                boundingBoxes = 0
+            try:
+                if len(boundingBoxes) >= 1:
+                    cropped = cropImage(key, boundingBoxes, dic)
+                    csheet = createContactSheet(cropped)
+                    display(csheet)
+            except:
+                print('But there were no faces in that file!')
+            boundingBoxes = []
+    return True
+    
+    
+    #-----------------------------#
+#   TEST 'MARK' IN BIG FILE   #
+#-----------------------------#
+test2 = checkWord('Mark', dictera)
