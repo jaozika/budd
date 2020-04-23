@@ -9,18 +9,21 @@ def cadastro():
     renda = input('Digite a renda mensal.\n')
     prof = input('Digite a profissão.\n')
     telef = input('Digite o telefone.\n')
+    senha = input("Insira uma senha para o cliente.\n")
     numero = random.randint(100000, 999999)
     while True:
         if numero in contas:
-            numero = random.randint(100000, 999999)
+            numero = random.randint(10000, 99999)
         else:
+            contas.append(numero)
             break
 
     dados[nome] = {'numeroConta': numero,
                    'endereco': endereco,
                    'rendaMensal': renda,
                    'profissao': prof,
-                   'telefone': telef}
+                   'telefone': telef,
+                   'senha': senha}
 
 while True:
     cadastro()
