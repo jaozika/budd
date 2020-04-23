@@ -1,0 +1,31 @@
+import random
+
+contas = []
+dados = {}
+
+def cadastro():
+    nome = input("Digite o nome completo do cliente.\n")
+    endereco = input("Digite o endereço.\n")
+    renda = input('Digite a renda mensal.\n')
+    prof = input('Digite a profissão.\n')
+    telef = input('Digite o telefone.\n')
+    numero = random.randint(100000, 999999)
+    while True:
+        if numero in contas:
+            numero = random.randint(100000, 999999)
+        else:
+            break
+
+    dados[nome] = {'numeroConta': numero,
+                   'endereco': endereco,
+                   'rendaMensal': renda,
+                   'profissao': prof,
+                   'telefone': telef}
+
+while True:
+    cadastro()
+    decider = input('Para cadastrar mais contas, digite 2, para sair digite 1.\n')
+    if decider == '1':
+        break
+    print(dados)
+    print('-------------***-------------***-------------***-------------***-------------***-------------***-------------***')
