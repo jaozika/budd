@@ -1,0 +1,28 @@
+dados = {'joao gusso': {'numeroConta': 808794, 'endereco': 'asd', 'rendaMensal': 'asd', 'profissao': 'asd', 'telefone': 'asd', 'senha': 'jao123'},
+         'ana reva': {'numeroConta': 540691, 'endereco': 'asd', 'rendaMensal': 'asd', 'profissao': 'asd', 'telefone': 'asd', 'senha': 'ana123'},
+         'alex carai': {'numeroConta': 338323, 'endereco': 'asd', 'rendaMensal': 'asd', 'profissao': 'asd', 'telefone': 'asd', 'senha': 'alex123'},
+         'andersinho mito': {'numeroConta': 982867, 'endereco': '', 'rendaMensal': 'asd', 'profissao': 'asd', 'telefone': 'asd', 'senha': 'andersinho123'}}
+
+continua = True
+while continua == True:
+    validador = False
+    try:
+        usuario = int(input("Insira o número da sua conta corrente.\n"))
+    except:
+        print("Insira apenas números!\n")
+        continue
+    for key in dados:
+        if dados[key]['numeroConta'] == usuario:
+            validador = True
+            nomeMeliante = key
+            senha = input('Insira sua senha {}\n'.format(nomeMeliante))
+            if dados[nomeMeliante]['senha'] == senha:
+                print("Acesso garantido.\n")
+                continua = False
+                break
+            else:
+                print('Senha incorreta!\n')
+    if validador == False:
+        print('Conta corrente não encontrada, por favor tente novamente!\n')
+        continue
+
