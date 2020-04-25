@@ -1,0 +1,139 @@
+import random
+from ast import literal_eval
+
+def novaConta():
+    nome = input('Insira o nome completo do cliente.\n')
+    profissao = input('Profissão: \n')
+    renda = input('Renda mensal: \n')
+    endereco = input('Endereço: \n')
+    telefone = input('Telefone para contato: \n')
+    senha = input('Senha: \n')
+    numero = random.randint(10000, 99999)
+    while True:
+        if numero in contasUsadas:
+            numero = random.randint(10000, 99999)
+        else:
+            contasUsadas.append('Nome: ' + str(nome) + ' ;' + ' Numero da conta: ' + str(numero))
+            break
+
+    dados[nome] = {'numeroConta': numero,
+                   'senha': senha,
+                   'profissao': profissao,
+                   'renda': renda,
+                   'endereco': endereco,
+                   'telefone': telefone}
+
+
+def pesquisaConta():
+    arquivoContas = open('teste.txt', 'r')
+    escolhaDaConta = input('Qual o nome do usuário que deseja pesquisar?\n')
+    conteudoContas = arquivoContas.read()
+    dicionarioContas = literal_eval(conteudoContas)
+
+    try:
+        numeroConta = dicionarioContas[escolhaDaConta]['numeroConta']
+        arquivoContas.close()
+        return numeroConta
+    except:
+        arquivoContas.close()
+        return 'Nome não encontrado no sistema, verifique se o digitou corretamente.\n'
+
+def mudarSenha():
+    arquivo = open('teste.txt', 'r')
+    conteudo = arquivo.read()
+    dicionario = literal_eval(conteudo)
+    arquivo.close()
+
+    try:
+        contaPesquisada = int(input('Qual o número da conta que deseja pesquisar?\n'))
+    except:
+        print('Apenas insira números!\n')
+
+    for nomeCliente in dicionario:
+        if dicionario[nomeCliente]['numeroConta'] == contaPesquisada:
+            print('Conta encontrada! Cadastrada no nome de {}'.format(nomeCliente))
+            novaSenha = input('Insira uma nova senha, sem caracteres especiais e acentos, de 4 a 8 caracteres.\n')
+
+    return novaSenha
+
+
+dados = {}
+contasUsadas = []
+caracteresProibidos = ['´', '^', '~', '`', '@', '#', '$', '_', '-', '&', '*', '%', '!', '?']
+options = {'1': novaConta,
+           '2': pesquisaConta,
+           '3': mudarSenha}
+
+while True:
+    print('Bem vindo ao Banco do Brasólia!\n')
+    print('Escolha uma opções para realizar uma ação.\n')
+    escolhaMenuPrincipal = input('1 - Cadastrar uma nova conta.\n'
+                                 '2- Procurar uma conta.\n'
+                                 '3 - Mudar senha de uma conta.\n'
+                                 '4 - Sair.\n')
+
+    if escolhaMenuPrincipal == '4':
+        break
+
+    # func armazena o nome da função, declarada no dicionário 'options'
+    func = options.get(escolhaMenuPrincipal, lambda: 'Opção Inválida!\n')
+
+    if func == novaConta:
+        while True:
+            func()
+            try:
+                arquivotxtR = open('teste.txt', 'r')
+                conteudoArquivo = arquivotxtR.read()
+                if len(conteudoArquivo) > 0:
+                    dicionarioArquivo = literal_eval(conteudoArquivo)
+
+                    for nomeCliente in dados:
+                        dicionarioArquivo[nomeCliente] = dados[nomeCliente]
+
+                        arquivotxtR.close()
+                        arquivotxtW = open('teste.txt', 'w')
+                        arquivotxtW.write(str(dicionarioArquivo))
+                        arquivotxtW.close()
+            except:
+                arquivotxtW = open('teste.txt', 'w')
+                arquivotxtW.write(str(dados))
+                arquivotxtW.close()
+            decider = input('Digite 1 para cadastrar outro cliente, 2 para voltar ao menu principal.\n')
+            if decider == '2':
+                break
+
+    if func == pesquisaConta:
+        while True:
+            resultadoPesquisa = func()
+            if type(resultadoPesquisa) == int:
+                print('Numero da conta é: {}\n'.format(resultadoPesquisa))
+            else:
+                print(resultadoPesquisa)
+
+            decider2 = input('Digite 1 para pesquisar outra conta, 2 para voltar ao menu principal.\n')
+            if decider2 == '2':
+                break
+
+    if func == mudarSenha:
+        flag = False
+        while True:
+            try:
+                novaSenha = func()
+            except:
+                continue
+
+            if len(novaSenha) > 8 or len(novaSenha) < 4:
+                print('A senha deve possuir entre 4 e 8 caracteres.')
+                continue
+
+            for char in novaSenha:
+                if char in caracteresProibidos:
+                    flag = True
+
+            if flag == True:
+                print('Apenas insira caracteres alfanuméricos, sem acentos ou caracteres especiais.')
+                continue
+
+            if flag == False:
+                print('Senha alterada com sucesso!\n')
+                break
