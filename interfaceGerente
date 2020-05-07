@@ -51,10 +51,11 @@ def mudarSenha():
 
     for nomeCliente in dicionario:
         if dicionario[nomeCliente]['numeroConta'] == contaPesquisada:
+            nomeCidadao = nomeCliente
             print('Conta encontrada! Cadastrada no nome de {}'.format(nomeCliente))
             novaSenha = input('Insira uma nova senha, sem caracteres especiais e acentos, de 4 a 8 caracteres.\n')
 
-    return novaSenha
+    return [novaSenha, dicionario, nomeCidadao]
 
 
 dados = {}
@@ -122,11 +123,11 @@ while True:
             except:
                 continue
 
-            if len(novaSenha) > 8 or len(novaSenha) < 4:
+            if len(novaSenha[0]) > 8 or len(novaSenha[0]) < 4:
                 print('A senha deve possuir entre 4 e 8 caracteres.')
                 continue
 
-            for char in novaSenha:
+            for char in novaSenha[0]:
                 if char in caracteresProibidos:
                     flag = True
 
@@ -136,4 +137,14 @@ while True:
 
             if flag == False:
                 print('Senha alterada com sucesso!\n')
+
+                nome = novaSenha[2]
+                senha = novaSenha[0]
+                dicionario = novaSenha[1]
+
+                dicionario[nome]['senha'] = senha
+
+                arquivo = open('teste.txt', 'w')
+                arquivo.write(str(dicionario))
+                arquivo.close()
                 break
