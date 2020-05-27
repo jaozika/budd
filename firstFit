@@ -1,0 +1,69 @@
+linhas = 3
+colunas = 5
+
+matriz = [[0, 1, 1, 0, 0],
+          [0, 1, 0, 0, 0],
+          [0, 1, 0, 1, 0]]
+
+def firstFit(matriz, size):
+    # Variável que guarda a quantidade de posições vazias em sequência
+    contador = 0
+
+    j = 0
+
+    # Variáveis que guardam as coordenadas de um elemento, pra acessar o dado elemento usar: matriz[posX][posY]
+    posX = -1
+    posY = -1
+
+    for linha in matriz:
+
+        # Atualiza o posX pra cada linha da matriz
+        posX += 1
+
+        for elemento in linha:
+            # Verifica se o posY é a última posição da lista, caso seja, será zerado pois passaremos para outra linha
+            if posY == colunas - 1:
+                posY = 0
+            # Se ainda não for o último elemento, somamos 1 a coordenada y
+            else:
+                posY += 1
+
+            # Verifica se o espaço em questão é um espaço vazio
+            if elemento == 0:
+                contador += 1
+
+                # Verifica se a quantidade de espaços vazios corresponde ao tamanho a ser alocado
+                if contador == size:
+                    #print(posX, posY)  ---------> para debuggar, não descomentar
+
+                    # Iterar a quantidade de vezes a ser alocada
+                    for i in range(size):
+                        # Testar se a alocação cabe em somente uma linha
+                        if posY >= size - 1:
+                            matriz[posX][posY - i] = 1
+
+                        #Caso não seja possível a alocação em uma única linha
+                        else:
+                            # Verifica se é o primeiro elemento da linha
+                            if posY - i >= 0:
+                                #print(posY - i)
+                                matriz[posX][posY - i] = 1
+                            # Caso seja o primeiro elemento, volta uma linha e começa pelo ultimo elemento da nova linha
+                            else:
+                                #print('mudando matriz[{}][{}]'.format(posX - 1, (colunas - 1) - i)) -----> para debbugar
+                                matriz[posX - 1][(colunas - 1) - j] = 1
+                                j += 1
+                    return matriz
+                
+            # Se for espaço ocupado, reinicia o contador
+            else:
+                contador = 0
+    # Retorna False caso não haja expaço suficiente
+    return False
+
+# MUDAR OS PARAMETROS DA FUNÇÃO ABAIXO PARA FAZER OS TESTES
+# LEMBRANDO QUE:
+# firstFit(matriz, size)
+# matriz --> matriz a ser analisada
+# size --> tamanho a ser alocado
+print(firstFit(matriz, 3))
