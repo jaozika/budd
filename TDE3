@@ -1,0 +1,32 @@
+import random
+linhas = 5
+colunas = 10
+
+def criarmatriz():
+    dados = []
+    for i in range(linhas):
+        linha = []
+        for j in range(colunas):
+            linha.append(random.randint(0, 1))
+        dados.append(linha)
+    return dados
+
+
+
+def matrizGrafica(matriz):
+    for i in matriz:
+        elem = 0
+        for j in i:
+            elem += 1
+            if j == 1 and elem < colunas:
+                print('x | ', end='')
+            elif j == 0 and elem < colunas:
+                print('  | ', end='')
+            elif j == 1:
+                print('x |')
+            elif j == 0:
+                print('  |')
+
+matriz = criarmatriz()
+print(matriz)
+matrizGrafica(matriz)
