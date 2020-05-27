@@ -28,5 +28,9 @@ def matrizGrafica(matriz):
                 print('  |')
 
 matriz = criarmatriz()
-print(matriz)
+
+# Codigo pra imprimir a matriz de maneira visualmente bonita
+print("\n".join(str(row) for row in matriz))
+
+print()
 matrizGrafica(matriz)
