@@ -1,0 +1,96 @@
+linhas = 4
+colunas = 8
+
+matriz = [[0, 0, 0, 0, 0, 1, 0, 1],
+          [0, 1, 0, 1, 0, 1, 0, 1],
+          [0, 1, 0, 1, 0, 1, 0, 1],
+          [0, 1, 0, 1, 0, 1, 0, 1]]
+
+def buscaEspaço(matriz, size):
+    contador = 0
+
+    # Variável pra guardar os tamanhos dos espaços vazios que estão disponíveis
+    empty_spaces = []
+
+    # Variáveis pra guardar as coordenadas dos espaços vazios
+    posX = -1
+    posY = -1
+
+    for linha in matriz:
+        posX += 1
+
+        for elemento in linha:
+            # Verifica se o posY é a última posição da lista, caso seja, será zerado pois passaremos para outra linha
+            if posY == colunas - 1:
+                posY = 0
+            # Se ainda não for o último elemento, somamos 1 a coordenada y
+            else:
+                posY += 1
+
+            #print('passando pelo elemento [{}][{}] - {}'.format(posX, posY, matriz[posX][posY]))
+
+            # Verifica se o espaço em questão é um espaço vazio
+            if elemento == 0:
+                contador += 1
+            else:
+                # Verifica se passamos por um espaço vazio do tamanho exato a ser alocado
+                if contador == size:
+                    # A posição atual na varredura é a do 1, então devemos voltar uma casa para informar onde termina
+                    #  o espaço vazio, para isso devemos testar se estamos na primeira posição da lista
+                    if posY > 0:
+                        return [contador, (posX, posY - 1)]
+                    # Caso estivermos na primeira posição, volta uma linha e retorna as informações
+                    else:
+                        return [contador, (posX - 1, colunas - 1)]
+
+                # Caso não seja um espaço do tamanho exato a ser alocado, adiciona o tamanho do espaço e as coordenadas
+                # de onde esse termina em uma lista e continua a iteração
+                elif contador > size:
+                    if posY > 0:
+                        empty_spaces.append([contador, (posX, posY - 1)])
+                    else:
+                        empty_spaces.append([contador, (posX - 1, colunas - 1)])
+                contador = 0
+    # Caso não exista um espaço do tamanho exato a ser alocado, retorna o tamanho do menor espaço disponível e as
+    # coordenadas de onde esse termina
+    try:
+        return sorted(empty_spaces, key=lambda x: x[0])[0]
+    except:
+        return False
+
+def bestFit(matriz, size, espaço):
+    try:
+        # Variável que guarda o tamanho do menor espaço vazio encontrado pela varredura
+        empty_size = espaço[0]
+        # Coordenadas de onde termina o espaço vazio
+        posX = espaço[1][0]
+        posY = espaço[1][1]
+    except:
+        return False
+    j = 0
+
+    # Existem 2 casos possíveis, ou o espaço encontrado é exatamente igual ao tamanho a ser alocado, ou não
+    # Testa se é o caso de não serem iguais os tamanhos
+    if size != empty_size:
+        # Altera a posição de onde devemos iniciar a alocação
+        new_posY = posY - (empty_size - size)
+
+        for i in range(size):
+            if new_posY - i >= 0:
+                matriz[posX][new_posY - i] = 1
+            else:
+                matriz[posX - 1][(colunas - 1) - j] = 1
+                j += 1
+    else:
+        for i in range(size):
+            if posY - i >= 0:
+                matriz[posX][posY - i] = 1
+            else:
+                matriz[posX - 1][(colunas - 1) - j] = 1
+                j += 1
+
+    return matriz
+
+#print(buscaEspaço(matriz, 3))
+#print(bestFit(matriz, 2, buscaEspaço(matriz, 2)))
+
